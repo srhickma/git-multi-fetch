@@ -1,0 +1,7 @@
+[package]
+name = "git-multi-fetch"
+version = "0.1.0"
+authors = ["Shane Hickman <srhickma@edu.uwaterloo.ca>"]
+edition = "2018"
+
+[dependencies]
