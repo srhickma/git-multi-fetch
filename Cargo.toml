@@ -1,7 +1,9 @@
 [package]
-name = "git-multi-fetch"
+name = "gmf"
 version = "0.1.0"
 authors = ["Shane Hickman <srhickma@edu.uwaterloo.ca>"]
 edition = "2018"
 
 [dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
+git2 = "0.13"
