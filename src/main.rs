@@ -1,7 +1,9 @@
 extern crate git2;
 
 use {
-    git2::{AutotagOption, Cred, FetchOptions, Remote, RemoteCallbacks, Repository},
+    git2::{
+        AutotagOption, Cred, CredentialHelper, FetchOptions, Remote, RemoteCallbacks, Repository,
+    },
     std::{
         error, fmt,
         fs::File,
@@ -154,8 +156,15 @@ fn get_remote_callbacks<'scope>() -> RemoteCallbacks<'scope> {
             io::stdout().flush().unwrap();
             true
         })
-        .credentials(|_url, username_from_url, _allowed_types| {
-            Cred::ssh_key_from_agent(username_from_url.unwrap())
+        .credentials(|url, username_from_url, _allowed_types| {
+            let username = CredentialHelper::new(url)
+                .username
+                .or_else(|| username_from_url.map(|s| s.to_string()));
+
+            match username {
+                Some(username) => Cred::ssh_key_from_agent(&username),
+                None => Cred::default(),
+            }
         });
 
     callbacks
