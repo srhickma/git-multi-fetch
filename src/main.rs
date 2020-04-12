@@ -39,7 +39,7 @@ fn main() {
     let index_file = match File::open(INDEX_FILE_NAME) {
         Ok(file) => file,
         Err(err) => fatal(
-            &format!("Failed to load configuration '{}'", INDEX_FILE_NAME),
+            &format!("failed to load configuration '{}'", INDEX_FILE_NAME),
             err.into(),
         ),
     };
@@ -49,7 +49,7 @@ fn main() {
             Ok(repo_path) => repo_path,
             Err(err) => {
                 error(
-                    &format!("Failed to read configuration line '{}'", INDEX_FILE_NAME),
+                    &format!("failed to read configuration line '{}'", INDEX_FILE_NAME),
                     err.into(),
                 );
                 continue;
@@ -57,7 +57,7 @@ fn main() {
         };
 
         if let Err(err) = fetch_all(&repo_path) {
-            error("Fetch failed: ", err);
+            error("fetch failed", err);
         }
     }
 }
@@ -65,14 +65,14 @@ fn main() {
 fn fetch_all(repo_path: &str) -> Result<()> {
     let repo = Repository::open(repo_path).map_err(|err| {
         Error::Nested(
-            format!("Failed to open repository '{}'", repo_path),
+            format!("failed to open repository '{}'", repo_path),
             err.into(),
         )
     })?;
 
     let remotes = repo.remotes().map_err(|err| {
         Error::Nested(
-            format!("Failed to list remotes for '{}'", repo_path),
+            format!("failed to list remotes for '{}'", repo_path),
             err.into(),
         )
     })?;
@@ -81,7 +81,7 @@ fn fetch_all(repo_path: &str) -> Result<()> {
         println!("Fetching remote '{}' for '{}'", remote_name, repo_path);
 
         if let Err(err) = fetch_remote(&repo, remote_name) {
-            error("Fetch failed: ", err);
+            error("fetch failed", err);
         }
     }
 
@@ -92,23 +92,23 @@ fn fetch_remote(repo: &Repository, remote_name: &str) -> Result<()> {
     let mut remote = repo
         .find_remote(remote_name)
         .or_else(|_| repo.remote_anonymous(remote_name))
-        .map_err(|err| Error::Nested("Failed to list remotes".to_string(), err.into()))?;
+        .map_err(|err| Error::Nested("failed to list remotes".to_string(), err.into()))?;
 
     let mut options = get_fetch_options();
 
     remote
         .download(&[] as &[&str], Some(&mut options))
-        .map_err(|err| Error::Nested("Failed downloading from remote".to_string(), err.into()))?;
+        .map_err(|err| Error::Nested("failed downloading from remote".to_string(), err.into()))?;
 
     print_remote_stats(&remote);
 
     remote
         .disconnect()
-        .map_err(|err| Error::Nested("Failed disconnecting from remote".to_string(), err.into()))?;
+        .map_err(|err| Error::Nested("failed disconnecting from remote".to_string(), err.into()))?;
 
     remote
         .update_tips(None, true, AutotagOption::Unspecified, None)
-        .map_err(|err| Error::Nested("Failed updating remote tips".to_string(), err.into()))?;
+        .map_err(|err| Error::Nested("failed updating remote tips".to_string(), err.into()))?;
 
     Ok(())
 }
